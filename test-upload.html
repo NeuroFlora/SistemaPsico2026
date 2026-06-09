@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test File Upload</title>
+</head>
+<body>
+    <h1>Test Photo Upload</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="hidden" name="usuarioId" value="test-user-123">
+        <input type="file" name="photo" accept="image/*" required>
+        <input type="text" name="descripcion" placeholder="Descripción (opcional)">
+        <button type="submit">Upload Photo</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const resultDiv = document.getElementById('result');
+
+            try {
+                const response = await fetch('http://localhost:3000/api/archivos/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <h3>Success!</h3>
+                        <p>File uploaded: ${result.archivo.nombre}</p>
+                        <p>URL: ${result.archivo.url}</p>
+                        <img src="http://localhost:3000${result.archivo.url}" style="max-width: 300px;">
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">Error: ${result.error}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

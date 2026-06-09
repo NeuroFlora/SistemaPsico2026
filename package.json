@@ -1,0 +1,42 @@
+{
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\""
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^7.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "axios": "^1.11.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.4"
+  },
+  "name": "sistemapsico",
+  "version": "1.0.0",
+  "description": "Plataforma multi-tenant de ayuda psicológica para instituciones educativas. Permite gestionar instituciones, usuarios (estudiantes, psicólogos, orientadores), aplicar quizzes de bienestar, agendar citas y dar seguimiento con roles, autenticación y notificaciones. Este repositorio es el punto de partida limpio (\"clean slate\") para la siguiente fase del sistema, con enfoque en escalabilidad, modularidad y evolución controlada.",
+  "main": "estructura.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moon1710/SistemaPsico.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moon1710/SistemaPsico/issues"
+  },
+  "homepage": "https://github.com/moon1710/SistemaPsico#readme"
+}

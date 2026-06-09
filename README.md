@@ -1,4 +1,4 @@
-# SistemaPsico2026
+# SistemaPsico
 
 Plataforma multi-tenant de ayuda psicológica para instituciones educativas. Permite gestionar instituciones, usuarios (estudiantes, psicólogos, orientadores), aplicar quizzes de bienestar, agendar citas y dar seguimiento con roles, autenticación y notificaciones. Este repositorio es el punto de partida limpio ("clean slate") para la siguiente fase del sistema, con enfoque en escalabilidad, modularidad y evolución controlada.
 
@@ -27,7 +27,7 @@ Es un monorepo con dos partes principales:
      - `App.jsx` layout y rutas.
      - `pages/` como Login, Dashboard, Quizzes y Citas.
      - `components/` reutilizables de UI.
-     - - `services/` para llamadas a la API.
+     - `services/` para llamadas a la API.
      - `styles/` (Tailwind u otros).
    - `package.json` con scripts de desarrollo, build y preview.
 
@@ -91,3 +91,4 @@ No subir variables sensibles. Validar roles y permisos en backend. Sanitizar ent
 ## Nota
 
 Se compartirán scripts de automatización como atajo, pero la primera instalación debe hacerse manual para que cada integrante entienda el flujo y pueda depurar más rápido si hay fallos.
+
