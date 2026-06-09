@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(curl:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npm run dev:*)",
+      "Bash(node:*)",
+      "Bash(dir \"C:\\Users\\MON\\Documents\\GitHub\\SistemaPsico\\client\\src\\pages\\citas\")",
+      "Read(//c/Users/MON/Desktop/**)",
+      "Bash(findstr:*)",
+      "Bash(npm run build:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(dir \"C:\\Users\\MON\\Documents\\GitHub\\SistemaPsico\\client\\src\\utils\")",
+      "Bash(find:*)",
+      "Bash(tasklist)",
+      "Bash(npm install:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx prisma generate:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
