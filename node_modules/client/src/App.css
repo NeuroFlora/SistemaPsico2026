@@ -1,0 +1,91 @@
+/* Importa aquí tu CSS de sidebar */
+.animate-fadeIn { animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-8px);} to { opacity: 1; transform: none; } }
+
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #232232;  /* Fallback color */
+  font-family: 'Montserrat', 'Nunito', Arial, sans-serif;
+  box-sizing: border-box;
+  --sb-track-color: #232E33;
+  --sb-thumb-color: #527ceb;
+  --sb-size: 12px;
+}
+
+body::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 8px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 8px;
+  
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  body {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+}
+
+body {
+  min-height: 100vh;
+  background: none; /* Fondo lo maneja cada sección */
+}
+
+/* Quitar bordes blancos: */
+* {
+  box-sizing: border-box;
+}
+
+/* Quitar margen de root */
+#root {
+  margin: 0;
+  padding: 0;
+}
+
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}

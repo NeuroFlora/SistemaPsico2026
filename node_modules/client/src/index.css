@@ -1,0 +1,482 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Nunito:wght@400;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --shark: #21252d;
+  --outer-space: #2b333c;
+  --blue-violet: #6762b3;
+  --wild-sand: #f7f7f7;
+  --empress: #7c777a;
+  --cornflower-blue: #527ceb;
+  --cerulean: #019fd2;
+  --picton-blue: #48b0f7;
+  --bright-turquoise: #10cfbd;
+  --gallery: #f0f0f0;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--outer-space);
+  font-family: 'Nunito', 'Montserrat', Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+}
+
+/* Oculta por completo la barra de scroll de la sidebar */
+.sidebar-scroll {
+  -ms-overflow-style: none;    /* IE/Edge (antiguo) */
+  scrollbar-width: none;       /* Firefox */
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;                   /* Chrome/Edge/Safari */
+}
+
+/* ==== HERO SECTION ==== */
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Montserrat', 'Nunito', Arial, sans-serif;
+}
+
+.hero-bg-img {
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(125deg, rgba(118, 110, 228, 0.05) 30%, rgba(150, 151, 224, 0.45) 100%),
+    url('./assets/bg.png') center center / cover no-repeat fixed;
+  z-index: 1;
+  opacity: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 700px;
+  margin: auto;
+  padding: 2.4rem 1.2rem;
+  color: var(--gallery);
+  font-family: 'Montserrat', 'Nunito', Arial, sans-serif;
+}
+
+.hero-badge {
+  font-size: 1.14rem;
+  color: var(--cornflower-blue);
+  margin-bottom: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-family: 'Nunito', 'Montserrat', Arial, sans-serif;
+}
+
+.hero-title {
+  font-size: 3rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--outer-space);
+  margin-bottom: 1.1rem;
+  line-height: 1.09;
+  font-family: 'Montserrat', Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.hero-title .accent {
+  color: var(--cornflower-blue);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.hero-description {
+  font-size: 1.18rem;
+  color: var(--empress);
+  margin-bottom: 2.3rem;
+  line-height: 1.6;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+
+.cta-btn {
+  background: var(--picton-blue);
+  color: #fff;
+  padding: 1rem 2.4rem;
+  border-radius: 999px;
+  font-size: 1.13rem;
+  font-weight: 700;
+  font-family: 'Montserrat', Arial, sans-serif;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(82,124,235,0.15);
+  transition: all 0.17s;
+}
+.cta-btn:hover {
+  background: var(--cerulean);
+  transform: scale(1.04);
+}
+
+/* ==== BENEFITS ==== */
+.benefits-section {
+  background: var(--wild-sand);
+  padding: 5rem 1rem;
+}
+.benefits-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--shark);
+  text-align: center;
+  margin-bottom: 1.1rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.benefits-desc {
+  text-align: center;
+  color: var(--empress);
+  margin-bottom: 2.7rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+.benefits-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+  gap: 2.2rem;
+  max-width: 1100px;
+  margin: auto;
+}
+.benefit-card {
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 3px 16px rgba(54, 64, 112, 0.07);
+  padding: 2.6rem 1.7rem;
+  text-align: center;
+  transition: 0.18s;
+}
+.benefit-card:hover {
+  box-shadow: 0 7px 30px rgba(82, 124, 235, 0.15);
+  transform: translateY(-7px) scale(1.02);
+}
+.benefit-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 2.1rem;
+  background: var(--gallery);
+}
+.icon-blue { color: var(--cornflower-blue);}
+.icon-green { color: var(--bright-turquoise);}
+.icon-purple { color: var(--blue-violet);}
+
+/* ==== HOW IT WORKS ==== */
+.how-section {
+  background: #fff;
+  padding: 5rem 1rem;
+}
+.how-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--shark);
+  text-align: center;
+  margin-bottom: 0.9rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.how-desc {
+  text-align: center;
+  color: var(--empress);
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+  gap: 2.2rem;
+  max-width: 1100px;
+  margin: auto;
+}
+.how-step {
+  text-align: center;
+  transition: 0.2s;
+}
+.how-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, var(--cornflower-blue) 0%, var(--blue-violet) 100%);
+  color: #fff;
+}
+
+/* ==== CTA FINAL ==== */
+.cta-section {
+  background: linear-gradient(90deg, var(--shark) 0%, var(--blue-violet) 100%);
+  padding: 4rem 1rem;
+  text-align: center;
+  color: #fff;
+}
+.cta-section h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.3rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.cta-section p {
+  color: var(--picton-blue);
+  font-size: 1.13rem;
+  margin-bottom: 2.5rem;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+.cta-btn-alt {
+  background: #fff;
+  color: var(--shark);
+  padding: 0.8rem 2.2rem;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Montserrat', Arial, sans-serif;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(50, 90, 223,0.09);
+  transition: all 0.13s;
+}
+.cta-btn-alt:hover {
+  background: var(--gallery);
+  color: var(--blue-violet);
+  transform: scale(1.04);
+}
+
+/* ==== ROLES SECTION ==== */
+.roles-section {
+  background: var(--gallery);
+  padding: 5rem 1rem;
+}
+
+.roles-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--shark);
+  text-align: center;
+  margin-bottom: 2.8rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.roles-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.role-card {
+  background: #fff;
+  border-radius: 1.1rem;
+  box-shadow: 0 3px 16px rgba(54, 64, 112, 0.10);
+  padding: 2.2rem 1.1rem 1.7rem 1.1rem;
+  text-align: center;
+  transition: box-shadow 0.18s, transform 0.18s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 260px;
+}
+
+.role-card:hover {
+  box-shadow: 0 7px 28px rgba(82, 124, 235, 0.13);
+  transform: translateY(-7px) scale(1.025);
+}
+
+.role-icon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.7rem;
+  margin-left: auto;
+  margin-right: auto;
+  background: var(--gallery);
+  box-shadow: 0 2px 8px rgba(82,124,235,0.04);
+}
+
+.role-blue    { color: var(--cornflower-blue); }
+.role-green   { color: var(--bright-turquoise); }
+.role-purple  { color: var(--blue-violet); }
+.role-orange  { color: #fdab49; }
+
+.role-card h3 {
+  font-size: 1.13rem;
+  font-weight: bold;
+  color: var(--shark);
+  margin-bottom: 0.7rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.role-card p {
+  color: var(--empress);
+  font-size: 1rem;
+  font-family: 'Nunito', Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* Responsive para roles */
+@media (max-width: 900px) {
+  .roles-title { font-size: 1.4rem; }
+  .roles-list { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 650px) {
+  .roles-section { padding: 2.3rem 0.3rem; }
+  .roles-title { font-size: 1.12rem; }
+  .roles-list { grid-template-columns: 1fr; gap: 1.1rem; }
+}
+
+
+/* ==== FOOTER ==== */
+.footer {
+  background: var(--shark);
+  color: #fff;
+  padding: 3rem 1.2rem 1.5rem 1.2rem;
+  font-size: 1rem;
+}
+.footer .footer-inner {
+  max-width: 1200px;
+  margin: auto;
+}
+.footer .footer-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 2rem;
+  margin-bottom: 1.9rem;
+}
+.footer-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--cornflower-blue);
+  margin-bottom: 0.5rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.footer-desc {
+  color: var(--gallery);
+  margin-bottom: 1.3rem;
+  max-width: 370px;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.footer-links li {
+  color: var(--empress);
+  margin-bottom: 0.7rem;
+  cursor: pointer;
+  transition: color 0.16s;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+.footer-links li:hover {
+  color: #fff;
+}
+
+.footer-link {
+  color: var(--empress);
+  text-decoration: none;
+  transition: color 0.16s;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+
+.footer-link:hover {
+  color: #fff;
+}
+.footer .footer-bottom {
+  border-top: 1px solid var(--outer-space);
+  padding-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.98rem;
+}
+.footer .footer-bottom .footer-bottom-links span {
+  margin: 0 1.2rem;
+  color: var(--empress);
+  cursor: pointer;
+  transition: color 0.15s;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+.footer .footer-bottom .footer-bottom-links span:hover {
+  color: #fff;
+}
+
+.footer-bottom-link {
+  margin: 0 1.2rem;
+  color: var(--empress);
+  text-decoration: none;
+  transition: color 0.15s;
+  font-family: 'Nunito', Arial, sans-serif;
+}
+
+.footer-bottom-link:hover {
+  color: #fff;
+}
+
+/* ==== RESPONSIVE ==== */
+@media (max-width: 900px) {
+  .hero-title { font-size: 2rem; }
+  .how-title, .benefits-title { font-size: 1.3rem; }
+  .footer .footer-main { grid-template-columns: 1fr; }
+  .footer .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .footer .footer-bottom .footer-bottom-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .footer-bottom-link {
+    margin: 0.25rem;
+  }
+}
+@media (max-width: 600px) {
+  .hero-content { padding: 2rem 0.3rem; }
+  .how-section, .benefits-section, .cta-section, .footer { padding-left: 0.5rem; padding-right: 0.5rem; }
+  .cta-section h2 { font-size: 1.13rem; }
+  .footer-bottom-link {
+    font-size: 0.9rem;
+    margin: 0.2rem;
+  }
+}
