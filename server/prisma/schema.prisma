@@ -1,0 +1,1012 @@
+// ============================================
+// SCHEMA PRISMA MYSQL COMPLETO - CONSOLIDADO
+// Sistema Multi-tenant Educativo Completo
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS COMPLETOS
+// ============================================
+
+enum InstitutionType {
+  UNIVERSIDAD
+  PREPARATORIA
+  SECUNDARIA
+  INSTITUTO_TECNICO
+  CENTRO_ESPECIALIZACION
+}
+
+enum EducationLevel {
+  BASICA
+  MEDIA_SUPERIOR
+  SUPERIOR
+  POSGRADO
+}
+
+enum InstitutionStatus {
+  PENDIENTE_APROBACION
+  ACTIVA
+  SUSPENDIDA
+  INACTIVA
+}
+
+enum UserRole {
+  ESTUDIANTE
+  PSICOLOGO
+  ORIENTADOR
+  ADMIN_INSTITUCION
+  SUPER_ADMIN_NACIONAL
+}
+
+enum UserStatus {
+  PENDIENTE
+  ACTIVO
+  INACTIVO
+  BLOQUEADO
+}
+
+enum RequestStatus {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+  EN_REVISION
+}
+
+enum Gender {
+  MASCULINO
+  FEMENINO
+  NO_BINARIO
+  PREFIERO_NO_DECIR
+}
+
+enum CivilStatus {
+  SOLTERO
+  CASADO
+  DIVORCIADO
+  VIUDO
+  UNION_LIBRE
+}
+
+enum SocioeconomicLevel {
+  BAJO
+  MEDIO_BAJO
+  MEDIO
+  MEDIO_ALTO
+  ALTO
+}
+
+enum AcademicShift {
+  MATUTINO
+  VESPERTINO
+  NOCTURNO
+  MIXTO
+}
+
+enum StudentStatus {
+  REGULAR
+  IRREGULAR
+  BAJA_TEMPORAL
+  BAJA_DEFINITIVA
+  EGRESADO
+}
+
+enum CitaEstado {
+  PROGRAMADA
+  CONFIRMADA
+  EN_PROGRESO
+  COMPLETADA
+  CANCELADA
+  NO_ASISTIO
+}
+
+enum CanalizacionTipo {
+  INTERNO
+  EXTERNO
+  ESPECIALISTA
+  INSTITUCIONAL
+}
+
+enum CanalizacionEstado {
+  ABIERTA
+  EN_PROCESO
+  CERRADA
+  CANCELADA
+}
+
+enum TipoNotificacion {
+  SISTEMA
+  CITA
+  TAREA
+  URGENTE
+  INFORMATIVA
+}
+
+enum TipoArchivo {
+  DOCUMENTO
+  IMAGEN
+  VIDEO
+  AUDIO
+  OTRO
+}
+
+// ============================================
+// INSTITUCIONES EXTENDIDAS
+// ============================================
+
+model Institucion {
+  id                    String            @id @default(cuid())
+  codigo                String            @unique @db.VarChar(20)
+  nombre                String            @unique @db.VarChar(255)
+  nombreCorto           String            @db.VarChar(100)
+  tipoInstitucion       InstitutionType
+  nivelEducativo        EducationLevel
+  
+  // Información de contacto básica
+  direccion             String?           @db.Text
+  ciudad                String?           @db.VarChar(100)
+  estado                String?           @db.VarChar(100)
+  codigoPostal          String?           @db.VarChar(10)
+  telefono              String?           @db.VarChar(20)
+  emailInstitucional    String?           @db.VarChar(255)
+  sitioWeb              String?           @db.VarChar(500)
+  
+  // Información del responsable
+  responsableNombre     String            @db.VarChar(255)
+  responsableEmail      String            @db.VarChar(255)
+  responsableTelefono   String?           @db.VarChar(20)
+  responsableCargo      String?           @db.VarChar(100)
+  
+  // Información institucional extendida
+  mision                String?           @db.Text
+  vision                String?           @db.Text
+  valores               String?           @db.Text
+  fechaFundacion        DateTime?
+  numeroAlumnos         Int?
+  numeroDocentes        Int?
+  
+  // Configuración académica
+  periodoEscolar        String?           @db.VarChar(50)
+  inicioClases          DateTime?
+  finClases             DateTime?
+  
+  // Control de estado
+  status                InstitutionStatus @default(ACTIVA)
+  fechaActivacion       DateTime?
+  fechaVencimiento      DateTime?
+  
+  // Configuración del sistema
+  maxUsuarios           Int               @default(1000)
+  
+  // Auditoría
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  createdBy             String?           @db.VarChar(255)
+  
+  // Relaciones
+  usuarios              Usuario[]
+  solicitudesAcceso     SolicitudAcceso[]
+  carreras              Carrera[]
+  quizzes               Quiz[]
+  
+  @@index([codigo])
+  @@index([status])
+  @@index([tipoInstitucion])
+  @@map("instituciones")
+}
+
+// ============================================
+// CARRERAS POR INSTITUCIÓN
+// ============================================
+
+model Carrera {
+  id                    String            @id @default(cuid())
+  institucionId         String            @db.VarChar(255)
+  
+  // Información básica
+  codigo                String            @db.VarChar(20)
+  nombre                String            @db.VarChar(255)
+  nombreCorto           String?           @db.VarChar(50)
+  
+  // Detalles académicos
+  areaConocimiento      String?           @db.VarChar(100)
+  duracionSemestres     Int?
+  modalidad             String?           @db.VarChar(50)
+  tipoCarrera           String?           @db.VarChar(50)
+  
+  // Descripción
+  descripcion           String?           @db.Text
+  perfilEgreso          String?           @db.Text
+  campoLaboral          String?           @db.Text
+  
+  // Control
+  activa                Boolean           @default(true)
+  fechaCreacion         DateTime?
+  
+  // Auditoría
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  
+  // Relaciones
+  institucion           Institucion       @relation(fields: [institucionId], references: [id], onDelete: Cascade)
+  usuarios              Usuario[]
+  
+  @@unique([institucionId, codigo])
+  @@index([institucionId])
+  @@index([areaConocimiento])
+  @@map("carreras")
+}
+
+// ============================================
+// USUARIOS EXTENDIDOS CON TODOS LOS CAMPOS
+// ============================================
+
+model Usuario {
+  id                    String        @id @default(cuid())
+  institucionId         String        @db.VarChar(255)
+  carreraId             String?       @db.VarChar(255)
+  
+  // Autenticación
+  email                 String        @db.VarChar(255)
+  emailVerificado       Boolean       @default(false)
+  passwordHash          String        @db.VarChar(255)
+  
+  // Información personal básica
+  nombre                String        @db.VarChar(255)
+  apellidoPaterno       String        @db.VarChar(255)
+  apellidoMaterno       String?       @db.VarChar(255)
+  nombreCompleto        String        @db.VarChar(765)
+  
+  // Identificadores oficiales
+  matricula             String?       @db.VarChar(50)
+  numeroEmpleado        String?       @db.VarChar(50)
+  cedulaProfesional     String?       @db.VarChar(50)
+  curp                  String?       @db.VarChar(18)
+  rfc                   String?       @db.VarChar(13)
+  nss                   String?       @db.VarChar(11)
+  
+  // Información demográfica
+  fechaNacimiento       DateTime?
+  edad                  Int?
+  genero                Gender?
+  estadoCivil           CivilStatus?
+  nacionalidad          String?       @db.VarChar(50)
+  paisOrigen            String?       @db.VarChar(50)
+  estadoOrigen          String?       @db.VarChar(50)
+  ciudadOrigen          String?       @db.VarChar(100)
+  
+  // Información de contacto
+  telefono              String?       @db.VarChar(20)
+  telefonoEmergencia    String?       @db.VarChar(20)
+  emailAlternativo      String?       @db.VarChar(255)
+  
+  // Dirección actual
+  direccion             String?       @db.Text
+  ciudad                String?       @db.VarChar(100)
+  estado                String?       @db.VarChar(100)
+  codigoPostal          String?       @db.VarChar(10)
+  colonia               String?       @db.VarChar(100)
+  
+  // Información académica (estudiantes)
+  semestre              Int?
+  grupo                 String?       @db.VarChar(10)
+  turno                 AcademicShift?
+  fechaIngreso          DateTime?
+  fechaEgreso           DateTime?
+  promedioGeneral       Decimal?      @db.Decimal(4,2)
+  creditosAcumulados    Int?
+  creditosTotales       Int?
+  estatusAcademico      StudentStatus?
+  generacion            String?       @db.VarChar(20)
+  
+  // Información socioeconómica
+  nivelSocioeconomico   SocioeconomicLevel?
+  trabajaActualmente    Boolean?      @default(false)
+  lugarTrabajo          String?       @db.VarChar(255)
+  ingresosFamiliares    Decimal?      @db.Decimal(10,2)
+  numeroHermanos        Int?
+  lugarEntreHermanos    Int?
+  viveCon               String?       @db.VarChar(100)
+  
+  // Información familiar
+  nombrePadre           String?       @db.VarChar(255)
+  telefonoPadre         String?       @db.VarChar(20)
+  ocupacionPadre        String?       @db.VarChar(100)
+  nombreMadre           String?       @db.VarChar(255)
+  telefonoMadre         String?       @db.VarChar(20)
+  ocupacionMadre        String?       @db.VarChar(100)
+  
+  // Contacto de emergencia
+  contactoEmergenciaNombre    String?  @db.VarChar(255)
+  contactoEmergenciaTelefono  String?  @db.VarChar(20)
+  contactoEmergenciaRelacion  String?  @db.VarChar(50)
+  contactoEmergenciaDireccion String?  @db.Text
+  
+  // Información médica básica
+  tipoSangre            String?       @db.VarChar(5)
+  alergias              String?       @db.Text
+  enfermedadesCronicas  String?       @db.Text
+  medicamentosActuales  String?       @db.Text
+  seguroMedico          String?       @db.VarChar(100)
+  numeroSeguroMedico    String?       @db.VarChar(50)
+  
+  // Información adicional académica
+  escuelaProcedencia    String?       @db.VarChar(255)
+  promedioPreparatoria  Decimal?      @db.Decimal(4,2)
+  examenAdmision        Int?
+  
+  // Información profesional (para empleados/psicólogos)
+  especialidades        String?       @db.Text
+  fechaContratacion     DateTime?
+  tipoContrato          String?       @db.VarChar(50)
+  departamento          String?       @db.VarChar(100)
+  jefeDirecto           String?       @db.VarChar(255)
+  horarioTrabajo        String?       @db.VarChar(100)
+  
+  // Información de transporte
+  medioTransporte       String?       @db.VarChar(50)
+  tiempoTraslado        Int?
+  
+  // Tecnología y conectividad
+  tieneComputadora      Boolean?      @default(false)
+  tieneInternet         Boolean?      @default(false)
+  velocidadInternet     String?       @db.VarChar(50)
+  dispositivosPropios   String?       @db.Text
+  
+  // Intereses y actividades
+  pasatiempos           String?       @db.Text
+  deportesPractica      String?       @db.Text
+  idiomasHabla          String?       @db.VarChar(255)
+  nivelIngles           String?       @db.VarChar(50)
+  
+  // Información de becas
+  tieneBeca             Boolean?      @default(false)
+  tipoBeca              String?       @db.VarChar(100)
+  montoBeca             Decimal?      @db.Decimal(10,2)
+  vigenciaBeca          DateTime?
+  
+  // Participación institucional
+  participaActividades  Boolean?      @default(false)
+  actividadesParticipa  String?       @db.Text
+  clubesOrganizaciones  String?       @db.Text
+  servicioSocial        Boolean?      @default(false)
+  horasServicioSocial   Int?
+  
+  // Control de acceso del sistema
+  rol                   UserRole
+  status                UserStatus    @default(PENDIENTE)
+  requiereCambioPassword Boolean      @default(true)
+  ultimoAcceso          DateTime?
+  intentosLoginFallidos Int           @default(0)
+  bloqueadoHasta        DateTime?
+  
+  // Configuración personal del sistema
+  tema                  String?       @db.VarChar(20) @default("light")
+  idiomaSistema         String?       @db.VarChar(10) @default("es")
+  notificacionesEmail   Boolean       @default(true)
+  notificacionesSMS     Boolean       @default(false)
+  
+  // Multimedia
+  fotoPerfilUrl         String?       @db.VarChar(500)
+  documentosUrl         String?       @db.Text
+  
+  // Auditoría extendida
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  createdBy             String?       @db.VarChar(255)
+  updatedBy             String?       @db.VarChar(255)
+  
+  // Relaciones
+  institucion           Institucion   @relation(fields: [institucionId], references: [id], onDelete: Cascade)
+  carrera               Carrera?      @relation(fields: [carreraId], references: [id])
+  solicitudesProcesadas SolicitudAcceso[] @relation("ProcesadaPor")
+  
+  // Relaciones de psicología y seguimiento
+  respuestasQuiz        RespuestaQuiz[]
+  citasComoPaciente     Cita[]        @relation("CitasPaciente")
+  citasComoPsicologo    Cita[]        @relation("CitasPsicologo")
+  canalizaciones        Canalizacion[]
+  historialMedico       HistorialMedico[]
+  notificaciones        Notificacion[]
+  archivos              Archivo[]
+  
+  @@unique([institucionId, email])
+  @@unique([institucionId, matricula])
+  @@unique([institucionId, numeroEmpleado])  
+  @@unique([institucionId, cedulaProfesional])
+  @@unique([curp])
+  @@index([institucionId])
+  @@index([carreraId])
+  @@index([rol])
+  @@index([status])
+  @@index([nombreCompleto])
+  @@index([fechaNacimiento])
+  @@index([genero])
+  @@index([semestre])
+  @@index([estatusAcademico])
+  @@map("usuarios")
+}
+
+// ============================================
+// SOLICITUDES DE ACCESO EXTENDIDAS
+// ============================================
+
+model SolicitudAcceso {
+  id                    String      @id @default(cuid())
+  
+  // Información básica del solicitante
+  nombre                String      @db.VarChar(255)
+  apellidoPaterno       String      @db.VarChar(255)
+  apellidoMaterno       String?     @db.VarChar(255)
+  email                 String      @unique @db.VarChar(255)
+  telefono              String?     @db.VarChar(20)
+  rolSolicitado         UserRole
+  
+  // Información adicional del solicitante
+  fechaNacimiento       DateTime?
+  genero                Gender?
+  curp                  String?     @db.VarChar(18)
+  direccion             String?     @db.Text
+  ciudad                String?     @db.VarChar(100)
+  estado                String?     @db.VarChar(100)
+  
+  // Información de institución
+  institucionNombre     String      @db.VarChar(255)
+  institucionExistente  Boolean     @default(false)
+  institucionId         String?     @db.VarChar(255)
+  
+  // Para nuevas instituciones
+  institucionTipo       InstitutionType?
+  institucionNivel      EducationLevel?
+  institucionDireccion  String?     @db.Text
+  institucionCiudad     String?     @db.VarChar(100)
+  institucionEstado     String?     @db.VarChar(100)
+  institucionTelefono   String?     @db.VarChar(20)
+  institucionEmail      String?     @db.VarChar(255)
+  
+  // Información específica del rol solicitado
+  cedulaProfesional     String?     @db.VarChar(50)
+  matricula             String?     @db.VarChar(50)
+  numeroEmpleado        String?     @db.VarChar(50)
+  carreraInteres        String?     @db.VarChar(255)
+  semestreActual        Int?
+  
+  // Información adicional para contexto
+  motivoSolicitud       String?     @db.Text
+  experienciaPrevia     String?     @db.Text
+  expectativasSistema   String?     @db.Text
+  
+  // Estado de la solicitud
+  status                RequestStatus @default(PENDIENTE)
+  notasAdmin            String?     @db.Text
+  motivoRechazo         String?     @db.Text
+  
+  // Información del responsable (si crea institución)
+  esResponsableInstitucion Boolean  @default(false)
+  cargoInstitucion      String?     @db.VarChar(100)
+  
+  // Control de procesamiento
+  procesadaPor          String?     @db.VarChar(255)
+  fechaProcesamiento    DateTime?
+  tiempoRespuesta       Int?
+  
+  // Seguimiento
+  intentosContacto      Int         @default(0)
+  ultimoContacto        DateTime?
+  canalContacto         String?     @db.VarChar(50)
+  
+  // Documentos adjuntos
+  documentosAdjuntos    String?     @db.Text
+  
+  // Auditoría
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  
+  // Relaciones
+  institucionExistente_fk Institucion? @relation(fields: [institucionId], references: [id])
+  procesadaPorUsuario   Usuario?    @relation("ProcesadaPor", fields: [procesadaPor], references: [id])
+  
+  @@index([email])
+  @@index([status])
+  @@index([institucionNombre])
+  @@index([rolSolicitado])
+  @@index([createdAt])
+  @@index([fechaProcesamiento])
+  @@map("solicitudes_acceso")
+}
+
+// ============================================
+// MÓDULO DE EVALUACIONES PSICOLÓGICAS
+// ============================================
+
+model Quiz {
+  id            String      @id @default(cuid())
+  institucionId String      @db.VarChar(255)
+  titulo        String      @db.VarChar(255)
+  descripcion   String?     @db.Text
+  instrucciones String?     @db.Text
+  tiempoLimite  Int?        // minutos
+  intentosPermitidos Int?   @default(1)
+  activo        Boolean     @default(true)
+  publico       Boolean     @default(false) // si otros psicólogos pueden usarlo
+  createdBy     String?     @db.VarChar(255)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  institucion   Institucion @relation(fields: [institucionId], references: [id], onDelete: Cascade)
+  preguntas     Pregunta[]
+  respuestas    RespuestaQuiz[]
+
+  @@index([institucionId])
+  @@index([activo])
+  @@index([createdBy])
+  @@map("quizzes")
+}
+
+model Pregunta {
+  id          String   @id @default(cuid())
+  quizId      String   @db.VarChar(255)
+  orden       Int      // orden de la pregunta
+  texto       String   @db.Text
+  tipo        String   @db.VarChar(50) // 'seleccion_unica', 'seleccion_multiple', 'abierta', 'escala'
+  opciones    Json?    // para preguntas de selección
+  obligatoria Boolean  @default(true)
+  puntaje     Int?     // para evaluaciones con puntuación
+  
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([quizId])
+  @@index([orden])
+  @@map("preguntas")
+}
+
+model RespuestaQuiz {
+  id          String   @id @default(cuid())
+  usuarioId   String   @db.VarChar(255)
+  quizId      String   @db.VarChar(255)
+  respuestas  Json     // { preguntaId: valor }
+  puntajeTotal Int?    // si el quiz tiene puntuación
+  completado  Boolean  @default(false)
+  tiempoInicio DateTime?
+  tiempoFin   DateTime?
+  fechaEnvio  DateTime @default(now())
+
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, quizId]) // un usuario solo puede responder una vez por quiz
+  @@index([usuarioId])
+  @@index([quizId])
+  @@index([fechaEnvio])
+  @@map("respuestas_quiz")
+}
+
+// ============================================
+// MÓDULO DE CITAS Y CONSULTAS
+// ============================================
+
+model Cita {
+  id             String     @id @default(cuid())
+  usuarioId      String     @db.VarChar(255)
+  psicologoId    String     @db.VarChar(255)
+  fechaHora      DateTime
+  duracion       Int        @default(60) // minutos
+  estado         CitaEstado @default(PROGRAMADA)
+  modalidad      String?    @db.VarChar(50) // presencial, virtual, telefonica
+  ubicacion      String?    @db.VarChar(255) // sala, enlace, etc.
+  
+  // Información adicional
+  motivo         String?    @db.Text
+  notas          String?    @db.Text
+  notasPsicologo String?    @db.Text
+  recordatorio   Boolean    @default(true)
+  
+  // Control de asistencia
+  confirmadaPorPaciente Boolean @default(false)
+  horaInicioReal DateTime?
+  horaFinReal    DateTime?
+  
+  // Auditoría
+  fechaCreacion  DateTime   @default(now())
+  createdBy      String?    @db.VarChar(255)
+  updatedAt      DateTime   @updatedAt
+  updatedBy      String?    @db.VarChar(255)
+
+  paciente       Usuario    @relation("CitasPaciente", fields: [usuarioId], references: [id], onDelete: Cascade)
+  psicologo      Usuario    @relation("CitasPsicologo", fields: [psicologoId], references: [id], onDelete: Cascade)
+  historial      HistorialMedico[]
+
+  @@index([usuarioId])
+  @@index([psicologoId])
+  @@index([fechaHora])
+  @@index([estado])
+  @@map("citas")
+}
+
+// ============================================
+// CANALIZACIONES Y SEGUIMIENTO
+// ============================================
+
+model Canalizacion {
+  id             String           @id @default(cuid())
+  usuarioId      String           @db.VarChar(255)
+  tipo           CanalizacionTipo
+  prioridad      String           @db.VarChar(20) @default("MEDIA") // BAJA, MEDIA, ALTA, URGENTE
+  
+  // Información de la canalización
+  motivo         String           @db.Text
+  descripcion    String           @db.Text
+  recomendaciones String?         @db.Text
+  
+  // Para canalizaciones externas
+  institucionExterna String?      @db.VarChar(255)
+  contactoExterno    String?      @db.VarChar(255)
+  telefonoExterno    String?      @db.VarChar(20)
+  
+  // Control de estado
+  estado         CanalizacionEstado @default(ABIERTA)
+  fechaLimite    DateTime?
+  
+  // Auditoría
+  fecha          DateTime         @default(now())
+  createdBy      String?          @db.VarChar(255)
+  updatedAt      DateTime         @updatedAt
+  
+  usuario        Usuario          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  seguimientos   Seguimiento[]
+
+  @@index([usuarioId])
+  @@index([tipo])
+  @@index([estado])
+  @@index([prioridad])
+  @@map("canalizaciones")
+}
+
+model Seguimiento {
+  id               String        @id @default(cuid())
+  canalizacionId   String        @db.VarChar(255)
+  fecha            DateTime      @default(now())
+  titulo           String?       @db.VarChar(255)
+  notas            String        @db.Text
+  accionesTomadas  String?       @db.Text
+  proximoPaso      String?       @db.Text
+  createdBy        String?       @db.VarChar(255)
+
+  canalizacion     Canalizacion  @relation(fields: [canalizacionId], references: [id], onDelete: Cascade)
+
+  @@index([canalizacionId])
+  @@index([fecha])
+  @@map("seguimientos")
+}
+
+// ============================================
+// HISTORIAL MÉDICO/PSICOLÓGICO
+// ============================================
+
+model HistorialMedico {
+  id           String   @id @default(cuid())
+  usuarioId    String   @db.VarChar(255)
+  citaId       String?  @db.VarChar(255) // opcional, puede ser independiente de cita
+  
+  // Información de la sesión
+  fecha        DateTime @default(now())
+  tipoSesion   String   @db.VarChar(50) // consulta, seguimiento, evaluacion, etc.
+  duracion     Int?     // minutos
+  
+  // Contenido clínico
+  motivoConsulta String? @db.Text
+  observaciones  String? @db.Text
+  diagnostico    String? @db.Text
+  tratamiento    String? @db.Text
+  recomendaciones String? @db.Text
+  
+  // Evaluación del estado
+  estadoEmocional String? @db.VarChar(100)
+  nivelAnsiedad   Int?    // escala 1-10
+  nivelDepresion  Int?    // escala 1-10
+  nivelEstres     Int?    // escala 1-10
+  
+  // Auditoría
+  createdBy    String?  @db.VarChar(255)
+  updatedAt    DateTime @updatedAt
+  
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  cita         Cita?    @relation(fields: [citaId], references: [id])
+
+  @@index([usuarioId])
+  @@index([citaId])
+  @@index([fecha])
+  @@index([tipoSesion])
+  @@map("historial_medico")
+}
+
+// ============================================
+// SISTEMA DE NOTIFICACIONES
+// ============================================
+
+model Notificacion {
+  id          String          @id @default(cuid())
+  usuarioId   String          @db.VarChar(255)
+  tipo        TipoNotificacion
+  titulo      String          @db.VarChar(255)
+  mensaje     String          @db.Text
+  leida       Boolean         @default(false)
+  importante  Boolean         @default(false)
+  
+  // Datos adicionales (JSON para flexibilidad)
+  datos       Json?
+  
+  // Programación
+  fechaEnvio  DateTime?       // null = inmediata
+  expiraEn    DateTime?
+  
+  createdAt   DateTime        @default(now())
+  
+  usuario     Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([tipo])
+  @@index([leida])
+  @@index([fechaEnvio])
+  @@map("notificaciones")
+}
+
+// ============================================
+// GESTIÓN DE ARCHIVOS
+// ============================================
+
+model Archivo {
+  id          String      @id @default(cuid())
+  usuarioId   String      @db.VarChar(255)
+  nombre      String      @db.VarChar(255)
+  nombreOriginal String   @db.VarChar(255)
+  tipo        TipoArchivo
+  mimeType    String      @db.VarChar(100)
+  tamaño      Int         // bytes
+  url         String      @db.VarChar(500)
+  
+  // Metadata
+  descripcion String?     @db.Text
+  tags        String?     @db.Text // JSON array
+  esPublico   Boolean     @default(false)
+  
+  // Auditoría
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([tipo])
+  @@index([createdAt])
+  @@map("archivos")
+}
+
+// ============================================
+// AUDITORÍA COMPLETA
+// ============================================
+
+model Auditoria {
+  id                    String      @id @default(cuid())
+  institucionId         String?     @db.VarChar(255)
+  
+  // Información básica de la acción
+  tabla                 String      @db.VarChar(100)
+  accion                String      @db.VarChar(50) // CREATE, UPDATE, DELETE, LOGIN, LOGOUT
+  registroId            String      @db.VarChar(255)
+  
+  // Usuario que realizó la acción
+  usuarioId             String?     @db.VarChar(255)
+  usuarioEmail          String?     @db.VarChar(255)
+  usuarioRol            UserRole?
+  
+  // Datos del cambio
+  datosAnteriores       Json?
+  datosNuevos           Json?
+  camposModificados     Json?       // Array de campos que cambiaron
+  
+  // Metadata técnica
+  ipAddress             String?     @db.VarChar(45) // IPv6 compatible
+  userAgent             String?     @db.Text
+  dispositivo           String?     @db.VarChar(100)
+  navegador             String?     @db.VarChar(100)
+  
+  // Contexto adicional
+  modulo                String?     @db.VarChar(50) // usuarios, citas, quizzes, etc.
+  operacion             String?     @db.VarChar(100) // login, crear_cita, enviar_quiz, etc.
+  resultado             String?     @db.VarChar(50) // exito, error, cancelado
+  tiempoEjecucion       Int?        // milisegundos
+  
+  // Información de sesión
+  sessionId             String?     @db.VarChar(255)
+  duracionSesion        Int?        // minutos de sesión activa
+  
+  // Datos específicos del contexto
+  detallesAdicionales   Json?       // información específica por módulo
+  
+  timestamp             DateTime    @default(now())
+  
+  @@index([tabla])
+  @@index([accion])
+  @@index([usuarioId])
+  @@index([timestamp])
+  @@index([institucionId])
+  @@index([modulo])
+  @@index([resultado])
+  @@index([sessionId])
+  @@map("auditoria")
+}
+
+// ============================================
+// CONFIGURACIONES DEL SISTEMA
+// ============================================
+
+model ConfiguracionSistema {
+  id                    String      @id @default(cuid())
+  institucionId         String?     @db.VarChar(255) // null = configuración global
+  
+  // Identificador único de la configuración
+  clave                 String      @db.VarChar(100)
+  valor                 String      @db.Text
+  tipo                  String      @db.VarChar(50) // string, number, boolean, json
+  
+  // Metadata
+  descripcion           String?     @db.Text
+  categoria             String?     @db.VarChar(50) // sistema, notificaciones, citas, etc.
+  esEditable            Boolean     @default(true)
+  requiereReinicio      Boolean     @default(false)
+  
+  // Auditoría
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  updatedBy             String?     @db.VarChar(255)
+  
+  @@unique([institucionId, clave])
+  @@index([categoria])
+  @@index([clave])
+  @@map("configuraciones_sistema")
+}
+
+// ============================================
+// REPORTES Y ESTADÍSTICAS
+// ============================================
+
+model Reporte {
+  id                    String      @id @default(cuid())
+  institucionId         String      @db.VarChar(255)
+  
+  // Información del reporte
+  nombre                String      @db.VarChar(255)
+  descripcion           String?     @db.Text
+  tipo                  String      @db.VarChar(50) // estudiantes, citas, canalizaciones, etc.
+  
+  // Configuración del reporte
+  parametros            Json?       // filtros, fechas, etc.
+  columnas              Json?       // qué campos incluir
+  formato               String      @db.VarChar(20) @default("PDF") // PDF, Excel, CSV
+  
+  // Programación automática
+  esAutomatico          Boolean     @default(false)
+  frecuencia            String?     @db.VarChar(50) // diario, semanal, mensual
+  proximaEjecucion      DateTime?
+  
+  // Estado del reporte
+  activo                Boolean     @default(true)
+  ultimaEjecucion       DateTime?
+  estadoUltimaEjecucion String?     @db.VarChar(50)
+  
+  // Auditoría
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  createdBy             String?     @db.VarChar(255)
+  
+  // Relaciones
+  ejecuciones           EjecucionReporte[]
+  
+  @@index([institucionId])
+  @@index([tipo])
+  @@index([proximaEjecucion])
+  @@map("reportes")
+}
+
+model EjecucionReporte {
+  id                    String      @id @default(cuid())
+  reporteId             String      @db.VarChar(255)
+  
+  // Información de la ejecución
+  fechaInicio           DateTime    @default(now())
+  fechaFin              DateTime?
+  estado                String      @db.VarChar(50) // ejecutando, completado, error
+  
+  // Resultados
+  registrosProcesados   Int?
+  tamañoArchivo         Int?        // bytes
+  urlArchivo            String?     @db.VarChar(500)
+  
+  // Error handling
+  mensajeError          String?     @db.Text
+  
+  // Auditoría
+  ejecutadoPor          String?     @db.VarChar(255)
+  
+  reporte               Reporte     @relation(fields: [reporteId], references: [id], onDelete: Cascade)
+  
+  @@index([reporteId])
+  @@index([fechaInicio])
+  @@index([estado])
+  @@map("ejecuciones_reporte")
+}
+
+// ============================================
+// SESIONES Y TOKENS
+// ============================================
+
+model Sesion {
+  id                    String      @id @default(cuid())
+  usuarioId             String      @db.VarChar(255)
+  
+  // Información de la sesión
+  token                 String      @unique @db.VarChar(500)
+  ipAddress             String?     @db.VarChar(45)
+  userAgent             String?     @db.Text
+  dispositivo           String?     @db.VarChar(100)
+  navegador             String?     @db.VarChar(100)
+  
+  // Control de tiempo
+  fechaCreacion         DateTime    @default(now())
+  fechaExpiracion       DateTime
+  ultimaActividad       DateTime    @default(now())
+  
+  // Estado
+  activa                Boolean     @default(true)
+  cerradaPor            String?     @db.VarChar(50) // usuario, timeout, admin
+  
+  @@index([usuarioId])
+  @@index([token])
+  @@index([fechaExpiracion])
+  @@index([activa])
+  @@map("sesiones")
+}
+
+// ============================================
+// LOGS DEL SISTEMA
+// ============================================
+
+model LogSistema {
+  id                    String      @id @default(cuid())
+  institucionId         String?     @db.VarChar(255)
+  
+  // Información del log
+  nivel                 String      @db.VarChar(20) // INFO, WARN, ERROR, FATAL
+  modulo                String      @db.VarChar(50)
+  operacion             String?     @db.VarChar(100)
+  mensaje               String      @db.Text
+  
+  // Datos técnicos
+  stackTrace            String?     @db.Text
+  datosAdicionales      Json?
+  
+  // Usuario relacionado (si aplica)
+  usuarioId             String?     @db.VarChar(255)
+  sessionId             String?     @db.VarChar(255)
+  
+  // Metadata técnica
+  servidor              String?     @db.VarChar(100)
+  version               String?     @db.VarChar(50)
+  
+  timestamp             DateTime    @default(now())
+  
+  @@index([nivel])
+  @@index([modulo])
+  @@index([timestamp])
+  @@index([usuarioId])
+  @@index([institucionId])
+  @@map("logs_sistema")
+}
