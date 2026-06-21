@@ -30,13 +30,13 @@
   "main": "estructura.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/moon1710/SistemaPsico.git"
+    "url": "git+https://github.com/NeuroFlora/SistemaPsico2026.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/moon1710/SistemaPsico/issues"
+    "url": "https://github.com/NeuroFlora/SistemaPsico2026/issues"
   },
-  "homepage": "https://github.com/moon1710/SistemaPsico#readme"
+  "homepage": "https://github.com/NeuroFlora/SistemaPsico2026#readme"
 }
